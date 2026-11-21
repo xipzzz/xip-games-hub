@@ -1,0 +1,17 @@
+{
+  "name": "Monster Pals Cards: How to Play",
+  "short_name": "Monster Pals",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6ec",
+  "theme_color": "#38866b",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
