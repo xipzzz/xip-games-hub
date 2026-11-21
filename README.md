@@ -43,7 +43,7 @@ A kids’ color-sort puzzle: stack scoops of the same flavor. About 50 levels, w
 
 Tap the falling tiles to play 10 kid-friendly, public-domain nursery songs (Twinkle Twinkle, Happy Birthday, Jingle Bells, and more). Easy mode never really “loses”: the song waits for the missed tile. Keyboard: A S D F for the four lanes.
 
-### Island Builders
+### Island Builders (simple Catan)
 
 A simplified island-building board game for about age 6 (no Catan name or art). Build roads and houses, and collect stars.
 
