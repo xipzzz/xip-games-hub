@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="theme-color" content="#07040a" />
+    <title>Lane Party</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Black+Ops+One&family=Russo+One&display=swap"
+      rel="stylesheet"
+    />
+    <script type="module" crossorigin src="./assets/index-D0JEIkzr.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-DwaKDrgl.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="view"></canvas>
+      <div id="flash"></div>
+      <div id="hud">
+        <div class="hud-tl">
+          <div class="tiny">next gate</div>
+          <div id="ckpt-dist" class="ckpt-dist">430 m</div>
+          <div class="bar"><span id="ckpt-bar-fill"></span></div>
+        </div>
+        <div class="hud-tr">
+          <div id="coins" class="coins">0</div>
+          <div id="run-dist" class="run-dist">0 m</div>
+          <div id="combo"></div>
+        </div>
+        <div class="hud-bot">
+          <div id="timer">22"</div>
+          <div id="form-name">SPORTS CAR</div>
+          <div class="bar form-bar">
+            <span id="form-bar-fill"></span>
+          </div>
+        </div>
+        <div id="banners"></div>
+      </div>
+      <div id="overlay">
+        <div class="splash">
+          <div class="timeup-title">TIME UP</div>
+          <div class="mark">LANE <em>PARTY</em></div>
+          <div class="tag">transform highway</div>
+          <div class="help">
+            Auto-drive. Steer to weave. Grab coins and portals.<br />
+            Checkpoints add time. Timer hits zero and the run ends.<br />
+            Keys: A/D or arrows · Space fire (tank) · Enter start
+          </div>
+          <div id="best-line"></div>
+        </div>
+      </div>
+      <div class="controls">
+        <div id="steer-zone"></div>
+        <button id="btn-left" class="pad" type="button" aria-label="Steer left">◀</button>
+        <button id="btn-right" class="pad" type="button" aria-label="Steer right">▶</button>
+        <div id="wheel" aria-label="Steering wheel"></div>
+        <button id="btn-start" type="button">START</button>
+        <button id="btn-fire" type="button">FIRE</button>
+      </div>
+    </div>
+  </body>
+</html>

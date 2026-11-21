@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+<meta name="apple-mobile-web-app-title" content="Island Builders" />
+<meta name="theme-color" content="#38bdf8" />
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="./icon-180.png" />
+<title>Island Builders</title>
+  <script type="module" crossorigin src="./assets/index-BPJCrwV_.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-D8Y1C5Wl.css">
+</head>
+<body>
+<div id="app">
+  <section id="home" class="screen">
+    <div class="home-art" id="homeArt"></div>
+    <h1 class="title">Island Builders</h1>
+    <div class="home-buttons">
+      <button id="btnContinue" class="big-btn green" aria-label="Continue">▶️</button>
+      <button id="btnNew" class="big-btn yellow" aria-label="New game">➕</button>
+    </div>
+  </section>
+
+  <section id="setup" class="screen hidden">
+    <div class="setup-seats" id="seats"></div>
+    <div class="setup-opts">
+      <button class="opt" id="optPirate" aria-label="Pirate on or off"></button>
+      <button class="opt" id="optTarget" aria-label="Stars to win"></button>
+      <button class="opt" id="optShuffle" aria-label="Shuffle island"></button>
+      <button class="opt" id="optTrade" aria-label="Market swaps per turn"></button>
+    </div>
+    <div class="setup-go">
+      <button class="big-btn grey" id="btnSetupBack" aria-label="Back">🏠</button>
+      <button class="big-btn green" id="btnStart" aria-label="Start">▶️</button>
+    </div>
+  </section>
+
+  <section id="game" class="screen hidden">
+    <div id="players"></div>
+    <div id="boardWrap"><div id="hint"></div><svg id="board" preserveAspectRatio="xMidYMid meet"></svg>
+      <button id="btnMenu" class="mini" aria-label="Home">🏠</button>
+      <button id="btnMute" class="mini" aria-label="Sound">🔊</button>
+    </div>
+    <div id="panel">
+      <div class="row1">
+        <button id="die" aria-label="Roll the die"></button>
+        <div id="hand"></div>
+      </div>
+      <div class="row2">
+        <button class="act build" data-build="road" aria-label="Build road"></button>
+        <button class="act build" data-build="house" aria-label="Build house"></button>
+        <button class="act build" data-build="castle" aria-label="Build castle"></button>
+        <button class="act" id="btnMarket" aria-label="Market swap"></button>
+        <button class="act" id="btnUndo" aria-label="Undo last build">↩️</button>
+        <button class="act" id="btnEnd" aria-label="End turn">➡️</button>
+      </div>
+    </div>
+  </section>
+
+  <div id="overlay" class="hidden"><div id="sheet"></div></div>
+  <canvas id="confetti"></canvas>
+  <div id="flyLayer"></div>
+</div>
+</body>
+</html>

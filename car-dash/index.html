@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#1b1430" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <title>Cute Car Dash: transforming highway runner</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='7' fill='%23ffd23f'/%3E%3C/svg%3E" />
+  <script type="module" crossorigin src="./assets/index-jenxoQF_.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-qFfnNnIZ.css">
+</head>
+<body>
+  <div id="app">
+    <canvas id="game-canvas" data-testid="game-canvas"></canvas>
+
+    <!-- HUD -->
+    <div id="hud" data-testid="hud" class="hidden">
+      <div id="hud-tl">
+        <div id="cp-bar" data-testid="cp-bar">
+          <div id="cp-fill"></div>
+          <div id="cp-car" aria-hidden="true">
+            <svg viewBox="0 0 40 20"><path d="M3 14 L5 9 L13 8 L18 3 L28 3 L33 8 L37 9 L38 14 Z" fill="#fff" stroke="#222" stroke-width="1.5"/><circle cx="11" cy="15" r="3.2" fill="#222"/><circle cx="30" cy="15" r="3.2" fill="#222"/><path d="M19 4.5 L27 4.5 L30 8 L16 8 Z" fill="#7ad"/></svg>
+          </div>
+          <div id="cp-flag" aria-hidden="true"></div>
+        </div>
+        <div id="hud-cp-dist" data-testid="hud-cp-dist">-0 m</div>
+        <div id="hud-charges" data-testid="hud-charges" title="Boost charges">
+          <span class="bolt"></span><span class="bolt"></span><span class="bolt"></span>
+        </div>
+      </div>
+
+      <div id="hud-tr">
+        <div class="row">
+          <div id="hud-combo" data-testid="hud-combo" class="hidden">COMBO <b>0</b><div id="combo-bar"><i></i></div></div>
+          <div id="hud-coins" data-testid="hud-coins"><span>0</span><i class="coin-ico"></i></div>
+        </div>
+        <div id="hud-distance" data-testid="hud-distance">0 <small>m</small></div>
+      </div>
+
+      <div id="hud-bottom">
+        <div id="hud-credit" data-testid="hud-credit">Coin: <span>0/2</span></div>
+        <div id="hud-timer" data-testid="hud-timer">30"</div>
+        <div id="hud-formwrap">
+          <div id="hud-form" data-testid="hud-form"></div>
+          <div id="form-bar" data-testid="form-bar"><i></i></div>
+        </div>
+      </div>
+
+      <div id="banner" data-testid="banner"></div>
+      <div id="sub-banner" data-testid="sub-banner"></div>
+      <div id="popups"></div>
+    </div>
+
+    <!-- Touch controls (shown on touch devices, also clickable on desktop) -->
+    <div id="touch" data-testid="touch-controls" class="hidden">
+      <button id="btn-left" data-testid="btn-left" class="tbtn steer" aria-label="Steer left">&#9664;</button>
+      <button id="btn-right" data-testid="btn-right" class="tbtn steer" aria-label="Steer right">&#9654;</button>
+      <button id="btn-boost" data-testid="btn-boost" class="tbtn round boost" aria-label="Boost">BOOST</button>
+      <button id="btn-fire" data-testid="btn-fire" class="tbtn round fire" aria-label="Fire">FIRE</button>
+    </div>
+
+    <div id="flash"></div>
+    <div id="sim-notch" aria-hidden="true"></div>
+    <div id="sim-home" aria-hidden="true"></div>
+
+    <!-- Title -->
+    <div id="title" class="overlay" data-testid="title-screen">
+      <div class="logo"><span class="c1">CUTE</span><span class="c2">CAR DASH</span></div>
+      <p class="tag">Grab <b class="star">&#9733; stars</b> to transform: UFO, Tank, Biplane. Grab <b class="blue">&#9889; bolts</b> for Lightning smash.</p>
+      <button id="start-btn" data-testid="start-btn" class="big-btn">START</button>
+      <div class="keys">
+        <div><kbd>&larr;</kbd><kbd>&rarr;</kbd> / <kbd>A</kbd><kbd>D</kbd> steer</div>
+        <div><kbd>Shift</kbd> / <kbd>B</kbd> boost &nbsp; <kbd>Space</kbd> fire (tank)</div>
+        <div class="touch-only">Phone: hold &#9664; &#9654; to steer, BOOST and FIRE buttons</div>
+      </div>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="overlay hidden" data-testid="results-screen">
+      <div class="res-art" aria-hidden="true">
+        <svg viewBox="0 0 320 150" width="320" height="150">
+          <defs>
+            <linearGradient id="fl" x1="0" y1="0" x2="1" y2="0">
+              <stop offset="0" stop-color="#ffe14d" stop-opacity="0"/>
+              <stop offset=".35" stop-color="#ffb400"/>
+              <stop offset="1" stop-color="#ff3b1f"/>
+            </linearGradient>
+          </defs>
+          <g class="flames">
+            <path d="M10 95 Q60 60 95 80 Q70 70 110 62 Q90 85 125 90 Z" fill="url(#fl)"/>
+            <path d="M0 112 Q55 90 100 100 Q80 105 120 104 Q90 118 125 120 Z" fill="url(#fl)"/>
+            <path d="M20 128 Q70 120 110 124 Q95 130 122 134 Z" fill="url(#fl)"/>
+          </g>
+          <g class="rescar">
+            <path d="M110 120 L118 96 L160 90 L186 66 L250 66 L276 90 L306 96 L312 120 Z" fill="#f4f6fa" stroke="#1d1d2b" stroke-width="4" stroke-linejoin="round"/>
+            <path d="M190 72 L246 72 L264 90 L174 90 Z" fill="#6fb6e8" stroke="#1d1d2b" stroke-width="3"/>
+            <path d="M280 98 L304 100 L306 108 L284 106 Z" fill="#ffd34d"/>
+            <circle cx="150" cy="122" r="17" fill="#222" stroke="#666" stroke-width="5"/>
+            <circle cx="276" cy="122" r="17" fill="#222" stroke="#666" stroke-width="5"/>
+          </g>
+        </svg>
+      </div>
+      <h1>TIME UP!</h1>
+      <div class="stats" data-testid="results-stats">
+        <div><span>Distance</span><b id="res-distance">0 m</b></div>
+        <div><span>Coins</span><b id="res-coins">0</b></div>
+        <div><span>Checkpoints</span><b id="res-cps">0</b></div>
+        <div><span>Best combo</span><b id="res-combo">0</b></div>
+        <div><span>Forms used</span><b id="res-forms">-</b></div>
+      </div>
+      <button id="restart-btn" data-testid="restart-btn" class="big-btn">PLAY AGAIN</button>
+      <div class="hint">Enter / Space / tap</div>
+    </div>
+  </div>
+</body>
+</html>

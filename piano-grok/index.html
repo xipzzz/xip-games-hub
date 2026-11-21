@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Piano Kids" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="theme-color" content="#f6d6ff" />
+  <link rel="manifest" href="./manifest.webmanifest" />
+  <link rel="apple-touch-icon" href="./icon-180.png" />
+  <link rel="icon" type="image/png" href="./icon-192.png" />
+  <title>Piano Tiles Kids</title>
+  <script type="module" crossorigin src="./assets/index-DC9CvUmd.js"></script>
+  <link rel="stylesheet" crossorigin href="./assets/index-CD5votwd.css">
+</head>
+<body>
+  <div id="app">
+    <section id="home" class="screen active" aria-label="Song list">
+      <header class="home-head">
+        <div class="mascot-wrap" id="homeMascot"></div>
+        <div class="title-block">
+          <h1>Piano Tiles <span>Kids</span></h1>
+          <div class="toggles">
+            <div class="mode-toggle" role="group" aria-label="Difficulty">
+              <button id="modeEasy" class="mode-btn" data-mode="easy">🐢 Easy</button>
+              <button id="modeNormal" class="mode-btn" data-mode="normal">🐰 Normal</button>
+            </div>
+            <button id="soundBtn" class="round-btn" aria-label="Sound">🔊</button>
+          </div>
+        </div>
+      </header>
+      <div id="songGrid" class="song-grid"></div>
+    </section>
+
+    <section id="game" class="screen" aria-label="Game">
+      <canvas id="board"></canvas>
+      <div class="hud">
+        <button id="pauseBtn" class="round-btn small" aria-label="Pause">⏸</button>
+        <div class="hud-mid">
+          <div id="score" class="score">0</div>
+          <div class="progress"><div id="progFill" class="prog-fill"></div><div id="progMascot" class="prog-mascot"></div></div>
+        </div>
+        <div id="hearts" class="hearts"></div>
+      </div>
+      <div id="combo" class="combo"></div>
+      <div id="banner" class="banner"></div>
+      <div id="prompt" class="prompt"><div class="prompt-mascot" id="promptMascot"></div><div class="bubble">Oops! Tap the glowing tile 🎵</div></div>
+
+      <div id="pauseOverlay" class="overlay">
+        <div class="card">
+          <div class="card-mascot" id="pauseMascot"></div>
+          <h2>Taking a break</h2>
+          <div class="btn-row">
+            <button id="resumeBtn" class="big-btn green">▶ Play</button>
+            <button id="pauseRetryBtn" class="big-btn blue">🔁 Again</button>
+            <button id="pauseHomeBtn" class="big-btn pink">🏠 Songs</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="heartsOverlay" class="overlay">
+        <div class="card">
+          <div class="card-mascot" id="heartsMascot"></div>
+          <h2>Great try!</h2>
+          <p>Want to keep playing?</p>
+          <div class="btn-row">
+            <button id="keepBtn" class="big-btn green">💖 Keep going</button>
+            <button id="heartsRetryBtn" class="big-btn blue">🔁 Try again</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="results" class="overlay">
+        <div class="card results-card">
+          <div class="card-mascot dance" id="resultsMascot"></div>
+          <h2 id="resTitle">Yay!</h2>
+          <div id="resStars" class="res-stars"><span>★</span><span>★</span><span>★</span></div>
+          <div class="res-score"><span id="resScore">0</span> points</div>
+          <div id="resBest" class="res-best"></div>
+          <div class="btn-row">
+            <button id="resRetryBtn" class="big-btn blue">🔁 Again</button>
+            <button id="resNextBtn" class="big-btn green">▶ Next</button>
+            <button id="resHomeBtn" class="big-btn pink">🏠 Songs</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+</html>

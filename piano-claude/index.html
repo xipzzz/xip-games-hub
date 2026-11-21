@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+    />
+    <title>Tap-Tap Tunes</title>
+    <meta name="description" content="A gentle piano tiles game for little kids." />
+    <meta name="theme-color" content="#ffd9ec" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Tap Tunes" />
+    <meta name="format-detection" content="telephone=no" />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/svg+xml" href="./icon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+    <script type="module" crossorigin src="./assets/index-B1ltEIFc.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-ChDNto7I.css">
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="board" aria-label="Game board"></canvas>
+      <div class="side-mascot hidden" id="sideMascot" aria-hidden="true"></div>
+
+      <section id="home" class="screen">
+        <header class="home-head">
+          <div class="home-mascot" id="homeMascot"></div>
+          <div class="home-title">
+            <h1>Tap-Tap Tunes</h1>
+            <p>Tap the tiles, play the song! 🎹</p>
+          </div>
+        </header>
+        <div class="mode-toggle" role="radiogroup" aria-label="Mode">
+          <button class="mode-btn" data-mode="easy" role="radio">🐣 <span>Easy</span></button>
+          <button class="mode-btn" data-mode="normal" role="radio">🦊 <span>Normal</span> <small>❤️×3</small></button>
+        </div>
+        <div class="song-list scrollable" id="songList"></div>
+        <div class="toast hidden" id="toast"></div>
+      </section>
+
+      <section id="hud" class="hidden">
+        <div class="progress"><div class="progress-fill" id="progressFill"></div></div>
+        <div class="hud-row">
+          <button class="round-btn" id="pauseBtn" aria-label="Pause">⏸</button>
+          <div class="hud-center">
+            <div class="hud-score" id="score">0</div>
+            <div class="hud-combo" id="combo"></div>
+          </div>
+          <div class="hud-hearts" id="hearts"></div>
+        </div>
+      </section>
+
+      <div class="bubble hidden" id="startHint"><span class="bubble-emoji">👆</span> Tap the ▶ tile!</div>
+      <div class="bubble help hidden" id="helpBubble">
+        <div class="bubble-mascot" id="helpMascot"></div>
+        <span>Oops! Tap the glowing tile 🎵</span>
+      </div>
+
+      <section class="overlay hidden" id="pauseOverlay">
+        <div class="card">
+          <div class="card-emoji">😴</div>
+          <h2>Taking a break</h2>
+          <div class="btn-row">
+            <button class="big-btn primary" id="resumeBtn">▶ <span>Play</span></button>
+          </div>
+          <div class="btn-row">
+            <button class="big-btn" id="restartBtn">🔁 <span>Again</span></button>
+            <button class="big-btn" id="pauseHomeBtn">🏠 <span>Home</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="overlay hidden" id="heartsOverlay">
+        <div class="card">
+          <div class="card-emoji">💪</div>
+          <h2>Keep going?</h2>
+          <p>You are doing great!</p>
+          <div class="btn-row">
+            <button class="big-btn primary" id="keepGoingBtn">❤️ <span>Keep going</span></button>
+          </div>
+          <div class="btn-row">
+            <button class="big-btn" id="tryAgainBtn">🔁 <span>Try again</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="overlay hidden" id="results">
+        <div class="card results-card">
+          <div class="results-mascot" id="resultsMascot"></div>
+          <h2 id="resultsTitle">Yay! You did it!</h2>
+          <p class="results-song" id="resultsSong"></p>
+          <div class="results-stars" id="resultsStars"></div>
+          <div class="results-score"><span id="resultsScore">0</span> <small>points</small></div>
+          <div class="results-best" id="resultsBest"></div>
+          <div class="btn-row">
+            <button class="big-btn" id="retryBtn">🔁 <span>Again</span></button>
+            <button class="big-btn primary" id="nextBtn">▶ <span>Next</span></button>
+            <button class="big-btn" id="resultsHomeBtn">🏠 <span>Home</span></button>
+          </div>
+        </div>
+      </section>
+
+      <div id="confetti" aria-hidden="true"></div>
+    </div>
+  </body>
+</html>

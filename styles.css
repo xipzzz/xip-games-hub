@@ -231,3 +231,32 @@ footer {
   font-weight: 600;
   font-size: 14px;
 }
+
+.card-wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-height: 100%;
+}
+
+.card-wrap .card { flex: 1; }
+
+.lan-link {
+  display: block;
+  text-align: center;
+  font-size: 13px;
+  font-weight: 800;
+  color: #6b4dff;
+  text-decoration: none;
+  padding: 8px 12px;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: var(--shadow);
+  -webkit-tap-highlight-color: transparent;
+}
+
+.lan-link:hover, .lan-link:focus-visible {
+  outline: none;
+  background: #f3edff;
+  box-shadow: 0 8px 20px rgba(70, 30, 90, 0.16);
+}

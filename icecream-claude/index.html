@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- maximum-scale=1 per brief: pinch-zoom fights the WebGL board and drag input (see README). -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#8fdcc8" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+    <meta name="apple-mobile-web-app-title" content="Ice Cream Sort" />
+    <meta name="description" content="A calm ice-cream colour-sort puzzle for kids. No ads, no timers." />
+    <link rel="manifest" href="./manifest.webmanifest" />
+    <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+    <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+    <title>Ice Cream Sort</title>
+    <script type="module" crossorigin src="./assets/index-DnIQcsmd.js"></script>
+    <link rel="stylesheet" crossorigin href="./assets/index-LgC5QYIw.css">
+  </head>
+  <body>
+    <div id="app">
+      <div class="decor" aria-hidden="true">
+        <div class="awning"></div>
+        <div class="counter"></div>
+      </div>
+      <div id="shelves" class="layer" aria-hidden="true"></div>
+      <div id="gl" class="layer"></div>
+      <div id="hit" class="layer" data-testid="board"></div>
+      <div id="hud" class="hud"></div>
+      <div id="hand" class="hand" aria-hidden="true"></div>
+
+      <section id="title" class="screen" data-testid="screen-title"></section>
+      <section id="map" class="screen" data-testid="screen-map"></section>
+
+      <div id="modal-win" class="modal" role="dialog" aria-modal="true" aria-label="Level complete" data-testid="win-modal"></div>
+      <div id="modal-restart" class="modal" role="dialog" aria-modal="true" aria-label="Start this level again?" data-testid="restart-modal"></div>
+      <div id="safe-probe" aria-hidden="true"></div>
+      <div id="fps" aria-hidden="true"></div>
+      <noscript>Ice Cream Sort needs JavaScript.</noscript>
+    </div>
+  </body>
+</html>
