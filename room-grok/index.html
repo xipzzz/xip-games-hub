@@ -81,7 +81,8 @@ const DESK_Z0 = 0.95, DESK_Z1 = 2.92, DESK_X0 = 2.2, DESK_H = 0.75;   // deep co
 
 // ---------------------------------------------------------------- renderer
 const renderer = new THREE.WebGLRenderer({ antialias: false, powerPreference: 'high-performance' });
-let PR = Math.min(window.devicePixelRatio || 1, 1.5);
+const RES_FIXED = Q.has('res') ? Math.max(0.5, Math.min(3, +Q.get('res') || 1)) : null;   // v5 (3d-retina-resolution): ?res=2 = fixed 200%, else Auto (DPR capped at 2)
+let PR = RES_FIXED ?? Math.min(window.devicePixelRatio || 1, 2);
 renderer.setPixelRatio(PR);
 renderer.setSize(innerWidth, innerHeight);
 renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -1172,11 +1173,12 @@ const bloom = new UnrealBloomPass(new THREE.Vector2(256, 256), 0.21, 0.38, 1.55)
 composer.addPass(bloom);
 composer.addPass(new OutputPass());
 const grade = new ShaderPass({
-  uniforms: { tDiffuse: { value: null }, uVig: { value: 0.3 }, uT: { value: 0 }, uWarm: { value: 0 }, uCool: { value: 0 } },
+  uniforms: { tDiffuse: { value: null }, uVig: { value: 0.3 }, uT: { value: 0 }, uWarm: { value: 0 }, uCool: { value: 0 }, uEV: { value: 1 }, uSh: { value: 0.3 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig; uniform float uT; uniform float uWarm; uniform float uCool; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float uVig; uniform float uT; uniform float uWarm; uniform float uCool; uniform float uEV; uniform float uSh; varying vec2 vUv;
     float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898, 78.233)) + uT) * 43758.5453); }
     void main(){ vec4 c=texture2D(tDiffuse,vUv); vec2 px=1.0/vec2(textureSize(tDiffuse,0)); vec3 nb=(texture2D(tDiffuse,vUv+vec2(px.x,0.)).rgb+texture2D(tDiffuse,vUv-vec2(px.x,0.)).rgb+texture2D(tDiffuse,vUv+vec2(0.,px.y)).rgb+texture2D(tDiffuse,vUv-vec2(0.,px.y)).rgb)*0.25; vec3 col=mix(c.rgb,nb,0.42);   // phone-video softness (Grok v2)
+      col *= uEV; col -= max(col - 0.6, 0.0) * uSh;   // v5: phone auto-exposure per view + compressed video highlights (matched to video percentiles)
       col = col*vec3(1.015,1.0,0.985);
       col *= mix(vec3(1.0), vec3(1.10, 0.96, 0.80), uWarm); col *= mix(vec3(1.0), vec3(0.86, 0.92, 1.08), uCool);   // v4 light modes
       col = col * 0.955 + vec3(0.032, 0.034, 0.038);          // phone-camera lifted blacks
@@ -1245,6 +1247,16 @@ function applyPose(P, wob = 0, tt = 0) {
   if (wob) camera.position.y += Math.sin(tt * 2.9) * 0.006 * wob;
 }
 
+// v5: phone auto-exposure. Per-view gain fitted to the video's luminance percentiles (p10/p50/p90 per ref shot), eased between views by yaw.
+const EVK = [[0.9, 0.82], [77.4, 0.9], [139.5, 0.84], [201.9, 0.68], [270, 0.8], [332.4, 0.85], [360.9, 0.82]];
+if (Q.has('ev')) EVK.forEach(k => k[1] = +Q.get('ev'));
+function evAt(yaw) {
+  yaw = ((yaw - 0.9) % 360 + 360) % 360 + 0.9;
+  for (let i = 0; i < EVK.length - 1; i++) if (yaw <= EVK[i + 1][0]) { const u = (yaw - EVK[i][0]) / (EVK[i + 1][0] - EVK[i][0]), s = u * u * (3 - 2 * u); return EVK[i][1] + (EVK[i + 1][1] - EVK[i][1]) * s; }
+  return EVK[0][1];
+}
+let evCur = -1;
+
 // ---------------------------------------------------------------- resize / fov
 function resize() {
   const w = innerWidth, h = innerHeight, a = w / h;
@@ -1252,7 +1264,8 @@ function resize() {
   camera.fov = a <= 1 ? 70 : Math.max(48, Math.min(70, 2 * Math.atan(Math.tan(46 * DEG) / a) / DEG));
   camera.updateProjectionMatrix();
   // pixel budget: never render more than ~2.1 MP (e.g. a 4K or retina fullscreen) so GTAO stays affordable
-  const pr = Math.min(PR, Math.sqrt(2.1e6 / (w * h)));
+  const pr = RES_FIXED ? PR : Math.min(PR, Math.sqrt(2.6e6 / (w * h)));   // Auto keeps a ~2.6 MP budget so GTAO stays affordable; fixed res is honoured
+  window.__res = { mode: RES_FIXED ? 'fixed' : 'auto', ratio: +pr.toFixed(3) };
   renderer.setPixelRatio(pr); renderer.setSize(w, h); composer.setPixelRatio(pr); composer.setSize(w, h);
   bloom.resolution.set(w * pr / 2, h * pr / 2);
 }
@@ -1277,7 +1290,7 @@ el.addEventListener('pointerleave', () => { hover = null; });
 // ---------------------------------------------------------------- Grok v4: tap-to-play objects, hover/tap highlight, light modes
 const ease = t => t < .5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2;
 const anims = [];
-function anim(dur, fn, done) { anims.push({ t: 0, dur, fn, done }); }
+let anim = function (dur, fn, done) { anims.push({ t: 0, dur, fn, done }); }
 let actx = null;
 function snd(freq, dur = 0.16, type = 'sine', vol = 0.08, when = 0) {
   try {
@@ -1509,6 +1522,7 @@ let wave = 1, hold = 0, holding = false;
 glassEl.addEventListener('pointerdown', e => { holding = true; wave = 1; const pr = renderer.getPixelRatio(); glassPass.uniforms.uC.value.set(e.clientX * pr, (innerHeight - e.clientY) * pr); });
 const relG = () => { if (holding) { holding = false; wave = 0; } };
 glassEl.addEventListener('pointerup', relG); glassEl.addEventListener('pointercancel', () => { holding = false; wave = 1; }); glassEl.addEventListener('pointerleave', relG);
+const TINT_W = new THREE.Color(1.0, 0.86, 0.72), TINT_C = new THREE.Color(0.6, 0.7, 0.95);
 function glassUpdate(dt) {
   if (!glassPass.enabled) return;
   const pr = renderer.getPixelRatio(), u = glassPass.uniforms, r = glassEl.getBoundingClientRect(), t = thumb.getBoundingClientRect();
@@ -1517,7 +1531,7 @@ function glassUpdate(dt) {
   u.uThumb.value.set(t.left * pr, (innerHeight - t.bottom) * pr, t.width * pr, t.height * pr); u.uTRad.value = Math.min(t.height / 2, 21) * pr;
   hold += ((holding ? 1 : 0) - hold) * Math.min(1, dt * 14); u.uHold.value = hold;
   if (!holding && wave < 1) wave = Math.min(1, wave + dt / 0.85); u.uWave.value = wave;
-  u.uTint.value.setRGB(1, 1, 1).lerp(new THREE.Color(1.0, 0.86, 0.72), cur.warm * 0.8).lerp(new THREE.Color(0.6, 0.7, 0.95), cur.cool * 2);
+  u.uTint.value.setRGB(1, 1, 1).lerp(TINT_W, cur.warm * 0.8).lerp(TINT_C, cur.cool * 2);
 }
 
 function ixUpdate(dt) {
@@ -1542,6 +1556,13 @@ function ixUpdate(dt) {
   if (toastT > 0) { toastT -= dt; if (toastT <= 0) toastEl.classList.remove('on'); }
 }
 
+// v5 (build-mobile-threejs-games): reduced motion = no handheld wobble and instant object moves; pause when hidden; unlock audio on first touch
+const REDUCED = matchMedia('(prefers-reduced-motion: reduce)').matches || Q.get('reduced') === '1';
+if (REDUCED) { const a0 = anim; anim = (dur, fn, done) => a0(0.001, fn, done); }
+let hidden = false;
+document.addEventListener('visibilitychange', () => { hidden = document.hidden; if (!hidden) last = performance.now(); });
+addEventListener('pointerdown', () => { try { actx ??= new (window.AudioContext || window.webkitAudioContext)(); actx.resume(); } catch (e) { } }, { once: true, capture: true });
+
 // ---------------------------------------------------------------- loop
 const fpsEl = document.getElementById('fps');
 let last = performance.now(), fc = 0, ft = last, frames = 0, lowFor = 0;
@@ -1553,19 +1574,20 @@ function frame(now) {
     if (POSEOFF) pose = { ...pose, yaw: pose.yaw + POSEOFF[0], pitch: pose.pitch + POSEOFF[1], p: [pose.p[0] + POSEOFF[2], pose.p[1], pose.p[2] + POSEOFF[3]] };
   }
   else if (TQ !== null) pose = poseAt(TQ);
-  else { if (!paused) playT += dt; pose = poseAt(playT); wob = 1; }
+  else { if (!paused) playT += dt; pose = poseAt(playT); wob = REDUCED ? 0 : 1; }
   if (now - lastInteract > 3000 && !down) { dragYaw *= 0.94; dragPitch *= 0.94; }
   const P = { ...pose, yaw: pose.yaw + dragYaw, pitch: pose.pitch + dragPitch };
   applyPose(P, wob, playT);
+  { const evT = evAt(pose.yaw + dragYaw * 0.5); evCur = evCur < 0 || SHOT || TQ !== null ? evT : evCur + (evT - evCur) * Math.min(1, dt * 2.5); grade.uniforms.uEV.value = evCur; }
   ixUpdate(dt);
   grade.uniforms.uT.value = (SHOT || TQ !== null) ? 0.0 : (now % 1000) * 0.001;
   composer.render();
   frames++; fc++;
   if (now - ft > 500) {
-    window.__fps = Math.round(fc * 1000 / (now - ft)); fc = 0; ft = now; fpsEl.textContent = window.__fps + ' fps';
+    window.__fps = Math.round(fc * 1000 / (now - ft)); fc = 0; ft = now; fpsEl.textContent = window.__fps + ' fps · ' + (window.__res ? (window.__res.mode === 'fixed' ? '' : 'Auto ') + Math.round(window.__res.ratio * 100) + '%' : '');
     // adaptive quality for phones/tablets: drop pixel ratio first, then bloom (never during fixed test shots)
     if (window.__fps < 40 && !SHOT && TQ === null && (PR > 1 || gtao.enabled || bloom.enabled)) {
-      if (++lowFor > 4) { if (PR > 1) { PR = 1; resize(); } else if (gtao.enabled) gtao.enabled = false; else bloom.enabled = false; lowFor = 0; }
+      if (++lowFor > 4) { if (PR > 1 && !RES_FIXED) { PR = Math.max(1, PR - 0.5); resize(); } else if (gtao.enabled) gtao.enabled = false; else bloom.enabled = false; lowFor = 0; }
     } else lowFor = 0;
   }
   if (frames === 3) window.__ready = true;
