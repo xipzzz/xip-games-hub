@@ -1,4 +1,4 @@
-const CACHE = 'icecream-sort-v3'
+const CACHE = 'icecream-sort-v4'
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
