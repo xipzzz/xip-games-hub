@@ -1,0 +1,85 @@
+/* Presentation chrome uses the studio palette (Avenir, warm grey, muted green). */
+html.pres-on { overflow: auto !important; height: auto !important; }
+html.pres-on body { overflow: visible !important; height: auto !important; touch-action: auto; }
+body.mode-presentation #app { position: fixed; inset: 0; width: 100%; height: 100dvh; z-index: 2; }
+body.mode-presentation #canvas-host,
+body.mode-presentation #figma-panel { right: 0 !important; }
+body.mode-presentation #side-panel,
+body.mode-presentation #panel-toggle,
+body.mode-presentation #hint,
+body.mode-presentation #price-tag,
+body.mode-presentation #pres-launch,
+body.mode-figma #pres-launch,
+body.mode-presentation .name-layer,
+body.mode-presentation #hint-pill,
+body.mode-presentation #walk-overlay,
+body.mode-presentation #joystick { display: none !important; }
+#pres-track { position: relative; width: 100%; pointer-events: none; }
+#pres-launch {
+  position: absolute; top: 22px; left: 26px; z-index: 18;
+  padding: 12px 20px; min-height: 44px;
+  border: 1px solid #b8c0b8; border-radius: 30px; background: #f5f5efdc; color: #3e4b40;
+  font: 500 13px "Avenir Next", "PingFang SC", sans-serif;
+  box-shadow: 0 5px 24px #17261a0a; cursor: pointer;
+}
+#pres-launch:hover { background: #e7eee4; }
+#pres-hud { position: absolute; inset: 0; z-index: 14; pointer-events: none; font-family: "Avenir Next", "PingFang SC", sans-serif; color: #29312c; }
+#pres-hud[hidden] { display: none !important; }
+#pres-count {
+  position: absolute; top: 22px; left: 50%; transform: translateX(-50%);
+  padding: 8px 14px; border-radius: 999px; background: #f3f2ece8; border: 1px solid #cbd0c6;
+  letter-spacing: .14em; font-size: 11px; font-weight: 500;
+}
+#pres-count b { font-weight: 600; letter-spacing: .08em; }
+#pres-hint {
+  position: absolute; left: 26px; bottom: 22px; max-width: 46vw;
+  color: #5c6a60; font-size: 12px; letter-spacing: .02em;
+}
+#pres-hint i { display: block; height: 2px; margin-top: 8px; background: #d5dbd0; border-radius: 2px; overflow: hidden; }
+#pres-hint i b { display: block; height: 100%; width: 0; background: #52644e; transform-origin: 0 50%; }
+#pres-exit {
+  position: absolute; top: 22px; right: 24px; pointer-events: auto;
+  padding: 12px 18px; min-height: 44px; border-radius: 30px;
+  border: 1px solid #b8c0b8; background: #f5f5efdc; color: #3e4b40;
+  font: 500 13px "Avenir Next", "PingFang SC", sans-serif; cursor: pointer;
+}
+#pres-ruler {
+  position: absolute; top: 18%; bottom: 18%; right: 22px; width: 18px;
+}
+#pres-ruler .tick { position: absolute; right: 0; width: 8px; height: 1px; background: #b7c0b4; }
+#pres-ruler .mark {
+  position: absolute; right: -2px; width: 14px; height: 2px; margin-top: -1px;
+  border: 0; padding: 0; background: #52644e; pointer-events: auto; cursor: pointer;
+}
+#pres-now { position: absolute; right: -3px; width: 16px; height: 16px; margin-top: -8px; border: 2px solid #52644e; border-radius: 50%; background: #f7f6f0; }
+#pres-spot { position: absolute; left: 0; top: 0; width: 0; height: 0; }
+#pres-reticle { position: absolute; width: 54px; height: 54px; margin: -27px 0 0 -27px; }
+#pres-reticle i { position: absolute; width: 12px; height: 12px; border: 0 solid #52644e; }
+#pres-reticle i:nth-child(1) { left: 0; top: 0; border-width: 1.5px 0 0 1.5px; }
+#pres-reticle i:nth-child(2) { right: 0; top: 0; border-width: 1.5px 1.5px 0 0; }
+#pres-reticle i:nth-child(3) { left: 0; bottom: 0; border-width: 0 0 1.5px 1.5px; }
+#pres-reticle i:nth-child(4) { right: 0; bottom: 0; border-width: 0 1.5px 1.5px 0; }
+#pres-reticle b { position: absolute; left: 50%; top: 50%; width: 5px; height: 5px; margin: -2.5px; border-radius: 50%; background: #52644e; }
+#pres-tag {
+  position: absolute; left: 36px; top: -8px; min-width: 180px; padding: 12px 14px 13px;
+  background: #f3f2ecf2; border: 1px solid #ffffffb0; border-radius: 16px;
+  box-shadow: 0 12px 42px #35453914;
+}
+#pres-tag { transform-origin: 0 0; }
+#pres-tag .ln { display: block; overflow: hidden; }
+#pres-tag .tag-no { display: block; color: #7b857a; font-size: 10px; letter-spacing: .16em; }
+#pres-tag .tag-title { display: block; margin: 3px 0 6px; font-size: 20px; font-weight: 500; letter-spacing: -.03em; }
+#pres-tag .tag-meta { display: block; color: #5b675e; font-size: 11px; line-height: 1.45; }
+#pres-sheet {
+  position: absolute; left: 26px; top: 22px; pointer-events: none;
+}
+#pres-sheet strong { display: block; font-size: 22px; font-weight: 500; letter-spacing: -.04em; }
+#pres-sheet span { display: block; margin-top: 4px; color: #7b857a; font-size: 10px; letter-spacing: .16em; }
+#pres-north { position: absolute; right: 56px; bottom: 28px; width: 36px; text-align: center; font-size: 11px; letter-spacing: .14em; color: #52644e; }
+#pres-north b { display: block; width: 1px; height: 28px; margin: 0 auto 4px; background: #52644e; position: relative; }
+#pres-north b::before { content: ""; position: absolute; left: -4px; top: -2px; border: 4px solid transparent; border-bottom-color: #52644e; }
+@media (max-width: 720px) {
+  #pres-launch { top: 16px; left: 16px; }
+  #pres-tag { min-width: 150px; }
+  #pres-hint { max-width: 70vw; }
+}

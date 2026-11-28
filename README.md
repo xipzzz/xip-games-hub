@@ -53,9 +53,27 @@ A simplified island-building board game for about age 6 (no Catan name or art). 
 | Island Builders | Codex | [island-codex](https://xipzzz.github.io/xip-games-hub/island-codex/) | http://192.168.50.122:5308/ |
 | Island Builders | Grok | [island-grok](https://xipzzz.github.io/xip-games-hub/island-grok/) | http://192.168.50.122:5307/ |
 
+### Atlantis 13th Floor
+
+A walkable 3D model of the Atlantis 13th-floor unit, made with Grok.
+
+| Game | Version | Pages | Home Wi-Fi |
+| --- | --- | --- | --- |
+| Atlantis 13th Floor | Grok · Grok Bot | [atlantis](https://xipzzz.github.io/xip-games-hub/atlantis/) | http://192.168.50.122:8766/ |
+
+### Feeling Free · cycling
+
+A 3D cycling scene with a person riding a bike (X-post recreation).
+
+| Game | Version | Pages | Home Wi-Fi |
+| --- | --- | --- | --- |
+| Feeling Free | Claude Code · claude-opus-5-5 | [feeling-free-claude](https://xipzzz.github.io/xip-games-hub/feeling-free-claude/) | http://192.168.50.122:5318/ |
+| Feeling Free | Codex · gpt-6.1-sol | [feeling-free-codex](https://xipzzz.github.io/xip-games-hub/feeling-free-codex/) | http://192.168.50.122:5317/ |
+| Feeling Free | Grok · Grok Bot | [feeling-free-grok](https://xipzzz.github.io/xip-games-hub/feeling-free-grok/) | http://192.168.50.122:5316/ |
+
 ## How the hub is served at home
 
-On the Mac Mini, the hub is served at `0.0.0.0:5300` from this folder. Existing Vite dev servers on ports 5190–5309 are separate, and the Home Wi-Fi links point at those.
+On the Mac Mini, the hub is served at `0.0.0.0:5300` from this folder. The game servers on ports 5190–5318 and the Atlantis viewer on port 8766 are separate. The Home Wi-Fi links point at those servers.
 
 ## GitHub Pages
 

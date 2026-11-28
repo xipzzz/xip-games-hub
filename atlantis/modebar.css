@@ -1,0 +1,32 @@
+/* Mode bar, copied from the Floor Plan 3D House viewer (#modes / #play there): square outlined monospace
+   buttons on cream paper, the active one filled ink, then a separate accent "Walk in" button. */
+#modebar {
+  --mb-ink: #16161a; --mb-paper: #f3efe6; --mb-accent: #d65c2e;
+  position: absolute; top: 16px; left: 16px; z-index: 19; display: flex; gap: 6px;
+}
+#modebar button {
+  font: 600 11px/1 "SF Mono", Menlo, monospace; letter-spacing: .08em; text-transform: uppercase;
+  background: rgba(243, 239, 230, .9); color: var(--mb-ink); border: 1px solid var(--mb-ink); border-radius: 0;
+  padding: 8px 10px; cursor: pointer;
+}
+#modebar button.on { background: var(--mb-ink); color: var(--mb-paper); }
+/* Walk in: ink like the reference crop Xip picked (the Floor Plan 3D House source tints it orange). Filled while the tour plays. */
+#modebar #mb-walkin { margin-left: 10px; }
+#modebar button:focus-visible { outline: 2px solid var(--mb-accent); outline-offset: 2px; }
+#modebar[hidden] { display: none !important; }
+/* The bar replaces the old "Presentation" pill (Walk in / Plan start it). */
+#pres-launch { display: none !important; }
+/* Make room under the bar for the Presentation sheet title, and beside it for the Figma toolbar label. */
+#pres-sheet { top: 64px; }
+body.mode-figma .figma-toolbar { padding-left: 330px; }
+/* 2026-11-22 (Grok v2): touch + phone. Buttons were ~29 px tall (below the 44 px touch guideline) and on a phone
+   the bar sat on top of the "00 / 12 rooms" counter and crowded the Exit button. */
+body.touch-ui #modebar button { min-height: 44px; padding: 0 12px; }
+@media (max-width: 720px) {
+  #modebar { top: calc(10px + env(safe-area-inset-top, 0px)); left: 10px; gap: 4px; }
+  #modebar button { padding: 0 9px; min-height: 40px; }
+  #modebar #mb-walkin { margin-left: 6px; }
+  #pres-count { top: 66px; }
+  #pres-exit { top: 62px; right: 12px; }
+  #pres-sheet { top: 112px; }
+}

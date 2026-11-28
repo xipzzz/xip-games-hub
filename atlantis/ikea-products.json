@@ -1,0 +1,18 @@
+{
+ "source": "ikea.com/my, checked 2026-10-10, prices in RM as shown on site",
+ "floor_tiles": "none: IKEA MY only sells outdoor decking (RUNNEN, ALTAPPEN), not suitable indoors. Keep existing light floor.",
+ "products": [
+  {"role":"sofa","name":"KIVIK 3-seat sofa, Tresund anthracite","url":"https://www.ikea.com/my/en/p/kivik-3-seat-sofa-tresund-anthracite-s69482831/","size_cm":{"w":228,"d":95,"h":83,"seat_h":45},"size_text":"228x95x83 cm","price_rm":1695,"note":"cover is removable and machine washable"},
+  {"role":"sofa_alt_chaise","name":"KIVIK 4-seat sofa with chaise longue, Tresund anthracite","url":"https://www.ikea.com/my/en/p/kivik-4-seat-sofa-with-chaise-longue-tresund-anthracite-s99494385/","size_cm":{"w":318,"d":163,"d_min":95,"h":83},"size_text":"318x163 (95) x83 cm","price_rm":2845,"note":"use only if it fits with ~90 cm walkways, else use 3-seat"},
+  {"role":"coffee_table","name":"LACK coffee table, black-brown","url":"https://www.ikea.com/my/en/p/lack-coffee-table-black-brown-80352951/","size_cm":{"w":118,"d":78,"h":45},"size_text":"118x78 cm","price_rm":169},
+  {"role":"coffee_table_alt","name":"BORGEBY coffee table, birch veneer","url":"https://www.ikea.com/my/en/p/borgeby-coffee-table-birch-veneer-70449402/","size_cm":{"diameter":70,"h":42},"size_text":"70 cm diameter","price_rm":399},
+  {"role":"rug","name":"STOENSE rug, low pile, off-white","url":"https://www.ikea.com/my/en/p/stoense-rug-low-pile-off-white-00426809/","size_cm":{"w":300,"d":200},"size_text":"200x300 cm","price_rm":699},
+  {"role":"floor_lamp","name":"LAUTERS floor lamp, ash/white","url":"https://www.ikea.com/my/en/p/lauters-floor-lamp-ash-white-40405046/","size_cm":{"base_diameter":62,"shade_w":37,"h_min":119,"h_max":151},"size_text":"119-151 cm high, shade 37 cm","price_rm":229},
+  {"role":"floor_lamp_2","name":"STRANDAD floor lamp, white/black","url":"https://www.ikea.com/my/en/p/strandad-floor-lamp-white-black-70594837/","size_cm":{"shade_diameter":21,"h":112},"size_text":"112 cm high, shade 21 cm","price_rm":59},
+  {"role":"cushion_cover","name":"GURLI cushion cover, unbleached","url":"https://www.ikea.com/my/en/p/gurli-cushion-cover-unbleached-60598732/","size_cm":{"w":50,"h":50},"size_text":"50x50 cm","price_rm":10},
+  {"role":"cushion_pad","name":"FJÄDRAR cushion pad, off-white","url":"https://www.ikea.com/my/en/p/fjaedrar-cushion-pad-off-white-80262192/","size_cm":{"w":50,"h":50},"size_text":"50x50 cm","price_rm":25},
+  {"role":"cushion_cover_accent","name":"LAGERPOPPEL cushion cover, grey-green","url":"https://www.ikea.com/my/en/p/lagerpoppel-cushion-cover-grey-green-70561813/","size_cm":{"w":50,"h":50},"size_text":"50x50 cm","price_rm":15},
+  {"role":"curtains","name":"STENFRÖ sheer curtains, 1 pair, white","url":"https://www.ikea.com/my/en/p/stenfroe-sheer-curtains-1-pair-white-with-heading-tape-50594881/","size_cm":{"w_each":145,"l":250},"size_text":"145x250 cm (pair)","price_rm":55},
+  {"role":"dining_table","name":"TONSTAD extendable table, oak veneer","url":"https://www.ikea.com/my/en/p/tonstad-extendable-table-oak-veneer-20594062/","size_cm":{"l":140,"l_max":196,"w":85,"h":75},"size_text":"140/196x85 cm","price_rm":1599,"note":"show extended to 196x85"}
+ ]
+}

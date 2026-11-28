@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no">
+  <meta name="theme-color" content="#deddd9">
+  <link rel="icon" href="data:,">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Atlantis Type C · C-13-04 Melaka · Map Walk · Grok · Grok Bot</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --top-safe: env(safe-area-inset-top, 0px);
+      --bottom-safe: env(safe-area-inset-bottom, 0px);
+      --left-safe: env(safe-area-inset-left, 0px);
+      --right-safe: env(safe-area-inset-right, 0px);
+      --panel: rgba(12, 14, 18, .94);
+      --line: rgba(255, 255, 255, .09);
+      --accent: #3079de;
+      --accent-soft: #77aefc;
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html, body { width: 100%; height: 100%; margin: 0; overflow: hidden; background: #0b0d10; }
+    body { min-height: 100dvh; color: #f5f7fa; overscroll-behavior: none; touch-action: none; }
+    #app {
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      width: 100%;
+      height: 100%;
+      height: 100dvh;
+      padding: var(--top-safe) var(--right-safe) var(--bottom-safe) var(--left-safe);
+    }
+    header {
+      z-index: 20;
+      display: grid;
+      gap: 8px;
+      padding: 9px 10px 10px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .meta {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      min-width: 0;
+    }
+    .meta strong { font-size: 13px; letter-spacing: .02em; white-space: nowrap; }
+    .meta span {
+      min-width: 0; overflow: hidden; color: #a7adb7; font-size: 11px;
+      letter-spacing: .08em; text-overflow: ellipsis; text-transform: uppercase; white-space: nowrap;
+    }
+    .row { display: flex; gap: 7px; width: 100%; overflow-x: auto; overscroll-behavior-x: contain;
+      scrollbar-width: none; -webkit-overflow-scrolling: touch; scroll-snap-type: x proximity; }
+    .row::-webkit-scrollbar { display: none; }
+    .btn, .tab, .chip {
+      flex: 0 0 auto;
+      min-height: 44px;
+      padding: 0 14px;
+      border: 1px solid rgba(255,255,255,.10);
+      border-radius: 12px;
+      background: #20242b;
+      color: #e9edf3;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 1;
+      scroll-snap-align: start;
+      touch-action: manipulation;
+      white-space: nowrap;
+      cursor: pointer;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+    .btn[aria-pressed="true"], .tab[aria-selected="true"], .chip[aria-pressed="true"] {
+      border-color: var(--accent-soft);
+      background: var(--accent);
+      color: white;
+      box-shadow: 0 0 0 1px rgba(119,174,252,.28) inset;
+    }
+    .chip[aria-pressed="false"] { opacity: .55; }
+    .btn:focus-visible, .tab:focus-visible, .chip:focus-visible { outline: 2px solid #fff; outline-offset: 2px; }
+    main { position: relative; min-height: 0; background: #11151b; }
+    #canvas-host { position: absolute; inset: 0; }
+    canvas { display: block; width: 100%; height: 100%; touch-action: none; }
+    #hint {
+      position: absolute; z-index: 5; left: 12px; right: 12px;
+      bottom: max(12px, calc(var(--bottom-safe) + 4px));
+      display: flex; justify-content: space-between; gap: 10px; pointer-events: none;
+      color: rgba(255,255,255,.9); font-size: 11px; line-height: 1.35;
+      text-shadow: 0 1px 4px #000, 0 1px 10px #000;
+    }
+    #room-name { font-weight: 700; }
+    #load-overlay {
+      position: absolute; inset: 0; z-index: 15;
+      display: grid; place-items: center;
+      background: rgba(11,13,16,.82); color: #cfd5de; font-size: 14px;
+    }
+    #load-overlay[hidden] { display: none; }
+    #walk-overlay {
+      position: absolute; inset: 0; z-index: 8;
+      display: none; place-items: center;
+      background: rgba(0,0,0,.35); color: #fff; font-size: 15px; font-weight: 650;
+      text-align: center; padding: 24px; cursor: pointer;
+    }
+    #walk-overlay.show { display: grid; }
+    #joystick {
+      position: absolute; z-index: 9; left: max(16px, var(--left-safe));
+      bottom: max(64px, calc(var(--bottom-safe) + 56px));
+      width: 108px; height: 108px; border-radius: 50%;
+      background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.16);
+      touch-action: none; display: none;
+    }
+    #joystick.knob {
+      /* used as container; knob is child */
+    }
+    #joystick .stick {
+      position: absolute; left: 50%; top: 50%; width: 44px; height: 44px;
+      margin: -22px 0 0 -22px; border-radius: 50%;
+      background: rgba(119,174,252,.85); pointer-events: none;
+    }
+    body.mode-walk.touch-ui #joystick { display: block; }
+    #look-zone {
+      position: absolute; inset: 0; z-index: 6; display: none; touch-action: none;
+    }
+
+    #crosshair {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      z-index: 13; /* above room labels (9) and walk panels, so the crosshair is always visible */
+      width: 14px;
+      height: 14px;
+      transform: translate(-50%, -50%);
+      pointer-events: none;
+      display: none;
+    }
+    #crosshair::before,
+    #crosshair::after {
+      content: "";
+      position: absolute;
+      background: #fff;
+      box-shadow: 0 0 0 1px rgba(0,0,0,.55);
+    }
+    #crosshair::before { left: 6px; top: 0; width: 2px; height: 14px; }
+    #crosshair::after { left: 0; top: 6px; width: 14px; height: 2px; }
+    body.walk-locked #crosshair { display: block; }
+    /* Free look (no pointer lock): hide the cursor over the 3D view, like a shooter game; UI stays clickable */
+    body.walk-locked #canvas-host canvas { cursor: none; }
+    /* Walk look = one pointer only: the centre crosshair. No hand cursor anywhere over the 3D view; labels and the
+       weather panel ignore the hidden mouse (press Esc to get the cursor back for them). Aimed label lights up. */
+    body.walk-locked #canvas-host, body.walk-locked #canvas-host * { cursor: none !important; }
+    body.walk-locked .name-label, body.walk-locked #weather-panel { pointer-events: none; }
+    body.walk-locked #weather-panel { opacity: .55; }
+    body.walk-locked .name-label.aim { background: #3079de; }
+    body.mode-figma #crosshair { display: none !important; }
+    body.mode-walk.touch-ui #look-zone { display: block; }
+    footer {
+      z-index: 20;
+      display: grid; gap: 8px;
+      padding: 8px 10px max(10px, calc(var(--bottom-safe) + 6px));
+      background: var(--panel);
+      border-top: 1px solid var(--line);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+    .section-label {
+      font-size: 10px; letter-spacing: .12em; text-transform: uppercase; color: #8b929c; margin: 0 2px;
+    }
+    #status {
+      display: none;
+    }
+    @media (min-width: 900px) {
+      header { grid-template-columns: auto 1fr; align-items: center; gap: 16px; padding: 10px 16px; }
+      .meta { display: grid; gap: 2px; }
+      header .row { justify-content: flex-end; }
+      footer { padding-inline: 16px; }
+    }
+
+    /* Figma full-file canvas panel */
+    #figma-panel {
+      position: absolute; inset: 0; z-index: 12;
+      display: none; flex-direction: column;
+      background: #0b0d10;
+    }
+    body.mode-figma #figma-panel { display: flex; }
+    body.mode-figma #canvas-host,
+    body.mode-figma #hint,
+    body.mode-figma #walk-overlay,
+    body.mode-figma #joystick,
+    body.mode-figma #look-zone,
+    body.mode-figma #crosshair,
+    body.mode-figma #load-overlay { visibility: hidden; pointer-events: none; }
+    body.mode-figma footer { display: none; }
+    .figma-toolbar {
+      flex: 0 0 auto;
+      display: flex; align-items: center; justify-content: space-between; gap: 10px;
+      padding: 8px 12px;
+      background: var(--panel);
+      border-bottom: 1px solid var(--line);
+    }
+    .figma-toolbar .label { font-size: 12px; color: #a7adb7; letter-spacing: .04em; }
+    .figma-toolbar a.btn {
+      text-decoration: none; display: inline-flex; align-items: center;
+    }
+    #figma-frame-wrap {
+      flex: 1; min-height: 0; position: relative;
+      overflow: hidden; background: #11151b; cursor: grab; touch-action: none;
+    }
+    #figma-frame-wrap.dragging { cursor: grabbing; }
+    #figma-stage {
+      position: absolute; left: 0; top: 0;
+      transform-origin: 0 0; will-change: transform;
+      user-select: none; -webkit-user-select: none;
+    }
+    #figma-stage img {
+      display: block; max-width: none;
+      width: auto; height: auto;
+      pointer-events: none;
+      box-shadow: 0 0 0 1px rgba(255,255,255,.06);
+    }
+    #figma-embed { width: 100%; height: 100%; border: 0; background: #11151b; }
+    .figma-note {
+      font-size: 11px; color: #8b929c; max-width: 52vw;
+      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+    }
+
+    .name-layer { position: absolute; inset: 0; pointer-events: none; z-index: 9; }
+    .name-label {
+      pointer-events: auto;
+      margin: 0;
+      border: 0;
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: rgba(12, 14, 18, .82);
+      color: #fff;
+      font: 650 13px/1 Inter, ui-sans-serif, sans-serif;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 1px 4px rgba(0,0,0,.45);
+    }
+    .name-label:hover, .name-label:focus-visible { background: #3079de; }
+    body.mode-figma .name-label { display: none !important; }
+    /* Phase 2: weather panel (top-left of the 3D view) */
+    .weather-panel { position: absolute; top: 10px; left: 10px; z-index: 12; display: flex; flex-direction: column; gap: 6px;
+      padding: 8px; border-radius: 12px; background: rgba(20,22,26,.72); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
+    .weather-row { display: flex; flex-wrap: wrap; gap: 4px; }
+    .weather-chip { font-size: 12px; padding: 4px 8px; }
+    /* 2026-10-10: keyboard shortcut badges 1–4 on the mode buttons (Xip) */
+    .btn .key { display: inline-block; min-width: 16px; margin-right: 6px; padding: 0 4px; border-radius: 4px; font-size: 11px; line-height: 16px; text-align: center; background: rgba(255,255,255,.14); opacity: .8; }
+    .weather-chip[aria-pressed="true"] { background: #2f7cf6; color: #fff; }
+    .weather-time { display: flex; align-items: center; gap: 6px; color: #e8ebef; font: 12px/1.2 system-ui, sans-serif; }
+    .weather-time input { flex: 1; min-width: 90px; accent-color: #2f7cf6; }
+    #lounge-proposal { position: absolute; z-index: 14; top: 12px; right: 12px; width: 286px;
+      padding: 13px; border: 1px solid #d2c9b6; border-radius: 16px; background: rgba(247,244,235,.96);
+      color: #333b2e; box-shadow: 0 5px 24px #0002; font-family: "Avenir Next", "PingFang SC", sans-serif; touch-action: pan-y; }
+    .proposal-heading { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 10px; }
+    .proposal-heading strong { font-size: 13px; letter-spacing: .03em; }
+    .proposal-heading span { font-size: 9px; letter-spacing: .13em; color: #737968; }
+    .proposal-toggle { display: grid; grid-template-columns: 1fr 1.22fr; gap: 4px; padding: 3px; background: #e6e5db; border-radius: 10px; }
+    .proposal-toggle button { min-height: 38px; border: 0; border-radius: 8px; background: transparent; color: #616653; font: 600 13px "Avenir Next", "PingFang SC", sans-serif; cursor: pointer; touch-action: manipulation; }
+    .proposal-toggle button[aria-pressed="true"] { color: #fffdf4; background: #535f45; box-shadow: 0 2px 4px #28322020; }
+    #lounge-proposal button:focus-visible, #lounge-proposal summary:focus-visible { outline: 2px solid #536443; outline-offset: 3px; }
+    #proposal-status { display: block; margin: 9px 1px 0; font-size: 11px; color: #68705e; line-height: 1.5; }
+    #lounge-proposal details { margin-top: 8px; font-size: 12px; line-height: 1.65; }
+    #lounge-proposal summary { cursor: pointer; color: #424e37; font-weight: 600; }
+    #lounge-proposal .proposal-notes { max-height: min(36vh, 260px); overflow: auto; padding-right: 4px; }
+    #lounge-proposal p { margin: 9px 0; }
+    #lounge-proposal a { color: #435537; text-underline-offset: 3px; }
+    #lounge-proposal .palette { display: flex; gap: 6px; margin-top: 12px; }
+    #lounge-proposal .palette i { width: 22px; height: 22px; border-radius: 50%; border: 1px solid #0001; }
+    #lounge-proposal .fine { color: #737666; font-size: 10px; }
+    body.mode-figma #lounge-proposal { display: none; }
+    /* IKEA proposal legend (app.js showIkeaLegend): bottom-left, clear of the view centre and the Settings panel */
+    #ikea-legend { position: absolute; z-index: 12; left: 12px; bottom: 44px; width: 318px; max-height: 44vh; overflow: auto;
+      padding: 8px 11px 7px; border-radius: 10px; background: rgba(250,248,242,.92); color: #2b2f2a; box-shadow: 0 4px 18px #0003;
+      font-size: 11px; line-height: 1.25; }
+    #ikea-legend[hidden] { display: none; }
+    #ikea-legend .ikea-legend-head { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 3px; }
+    #ikea-legend .ikea-legend-head b { font-size: 12px; color: #0b4f9c; }
+    #ikea-legend .ikea-legend-head span { color: #7a7d74; font-size: 10px; }
+    #ikea-legend ul { list-style: none; margin: 0; padding: 0; }
+    /* one line per product: name · size · price */
+    #ikea-legend li { display: grid; grid-template-columns: auto 1fr auto; column-gap: 7px; align-items: baseline; padding: 2px 0; border-top: 1px solid #0000000f; }
+    #ikea-legend li a { color: inherit; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    #ikea-legend li a:hover { text-decoration: underline; }
+    #ikea-legend .ikea-size { color: #6a6e66; font-size: 10px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    #ikea-legend .ikea-price { text-align: right; font-variant-numeric: tabular-nums; }
+    #ikea-legend .ikea-total { border-top: 1px solid #0003; padding-top: 3px; }
+    #ikea-legend p { margin: 4px 0 0; color: #7a7d74; font-size: 9.5px; }
+    body.mode-figma #ikea-legend { display: none; }
+    @media (max-width: 700px) { #ikea-legend { width: 220px; max-height: 32vh; } }
+    @media(max-width: 600px) {
+      #lounge-proposal { width: 240px; top: 8px; right: 8px; padding: 10px; }
+      #lounge-proposal .proposal-heading span { display: none; }
+      #lounge-proposal details { margin-top: 5px; }
+      #lounge-proposal .proposal-notes { max-height: 23vh; }
+      .weather-panel { top: 158px; max-width: 165px; }
+    }
+    /* 2026-10-10 (Xip): every setting lives in one right-side panel that can be hidden (button, ⟩, or key P).
+       The existing controls are moved in (same ids), so their behaviour is unchanged. */
+    #side-panel { position: absolute; z-index: 16; top: 0; right: 0; bottom: 0; width: 300px; overflow-y: auto; overscroll-behavior: contain;
+      background: rgba(14,17,22,.93); backdrop-filter: blur(10px); border-left: 1px solid rgba(255,255,255,.08); color: #e8ecf1;
+      padding: 10px 12px 18px; display: flex; flex-direction: column; gap: 4px; transition: transform .25s ease; }
+    body.panel-hidden #side-panel { transform: translateX(100%); pointer-events: none; }
+    #side-panel .sp-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px; }
+    #side-panel .sp-head strong { font-size: 13px; letter-spacing: .04em; }
+    #side-panel .sp-label { font-size: 10px; letter-spacing: .12em; text-transform: uppercase; opacity: .55; margin: 10px 0 4px; }
+    #side-panel > * { flex-shrink: 0; }   /* rows keep their full height inside the scrolling panel */
+    #side-panel .row { display: flex; flex-wrap: wrap; gap: 6px; overflow: visible; width: auto; }
+    #side-panel .btn, #side-panel .tab { font-size: 12px; padding: 6px 10px; min-height: 32px; }
+    #side-panel .weather-panel { position: static; max-width: none; background: none; padding: 0; box-shadow: none; }
+    #side-panel #lounge-proposal { position: static; width: auto; margin: 0; max-height: none; }
+    #side-panel #lounge-proposal .proposal-notes { max-height: 220px; }
+    #side-panel #status { margin-top: 10px; font-size: 11px; opacity: .55; display: flex; flex-direction: column; gap: 2px; }
+    #side-panel .sp-layout button[aria-pressed="true"] { background: #2f7cf6; color: #fff; }
+    #panel-toggle { margin-left: auto; }
+    body.panel-moved footer { display: none; }
+    body.panel-moved #layout-gear .gear-btn { display: none; }
+    @media(max-width: 600px) { #side-panel { width: 82vw; } }
+    /* 2026-10-10 (Xip): hover price tag; the always-on product lists stay hidden ("very distracting") */
+    #grok-legend, #ikea-legend { display: none !important; }
+    #price-tag { position: absolute; z-index: 13; pointer-events: none; background: #fff; color: #111; padding: 10px 14px 12px;
+      min-width: 170px; max-width: 240px; box-shadow: 0 6px 22px rgba(0,0,0,.18); font: 13px/1.3 system-ui, sans-serif; display: flex; flex-direction: column; gap: 3px; }
+    #price-tag[hidden] { display: none; }
+    #price-tag b { font-weight: 700; }
+    #price-tag span { font-size: 11px; color: #555; }
+    #price-tag strong { font-size: 26px; font-weight: 800; letter-spacing: -.02em; margin-top: 2px; }
+    #price-tag strong small { font-size: 12px; font-weight: 700; vertical-align: top; margin-right: 1px; }
+    #price-tag em { font-size: 10px; color: #888; font-style: normal; }
+  </style>
+  <link rel="stylesheet" href="./studio-ui.css?v=4">
+  <link rel="stylesheet" href="./presentation.css?v=1">
+  <link rel="stylesheet" href="./modebar.css?v=4">
+</head>
+<body>
+  <div id="app">
+    <div id="legacy-controls" hidden>
+      <div class="row" id="modes" role="tablist" aria-label="Camera mode">
+        <button class="btn" id="mode-explore" aria-pressed="true" type="button"><span class="key">1</span>Explore</button>
+        <button class="btn" id="mode-walk" aria-pressed="false" type="button"><span class="key">2</span>Walk</button>
+        <button class="btn" id="mode-figma" aria-pressed="false" type="button"><span class="key">3</span>Figma</button>
+        <button class="btn" id="no-perspective" aria-pressed="true" type="button"><span class="key">4</span>No perspective</button>
+      </div>
+    </div>
+    <main>
+      <div id="canvas-host"></div>
+      <div id="modebar" role="toolbar" aria-label="View mode">
+        <button type="button" data-m="plan" aria-pressed="false" title="Plan sheet">Plan</button>
+        <button type="button" data-m="walk" aria-pressed="false" title="2 / F">Walk</button>
+        <button type="button" data-m="orbit" aria-pressed="false" title="Free orbit · drag · scroll zoom">Orbit</button>
+        <button type="button" id="mb-walkin" data-m="walkin" aria-pressed="false" title="Guided tour · Space pauses">&#9654; Walk in</button>
+      </div>
+      <aside id="lounge-proposal" data-layout="assisting" aria-label="Design notes" hidden>
+        <details><summary>Design notes & IKEA inspiration</summary>
+          <div class="proposal-notes">
+            <div class="palette" aria-label="Off-white, light wood, olive green, terracotta"><i style="background:#e5dfcf"></i><i style="background:#c49d70"></i><i style="background:#788064"></i><i style="background:#aa7256"></i></div>
+            <p><strong>Warm Nordic</strong><br>Off-white 3-seat sofa + wood-frame lounge chair, keeping the balcony opening clear. An oval coffee table and flat-woven rug frame the seating area; olive cushions, a warm floor lamp and plants add layers.</p>
+            <p>Design sizes: sofa 235 × 95 cm; coffee table 115 × 64 cm; rug 300 × 200 cm.</p>
+            <p>Wall colour, tiles, TV area and dining table stay as they are. The view stays the same when switching, for easy comparison.</p>
+            <p>Inspiration:<br><a href="https://www.ikea.com/sg/en/rooms/living-room/gallery/a-japandi-living-room-with-colours-and-materials-inspired-by-nature-pub5c1a7ed0/" target="_blank" rel="noopener noreferrer">IKEA · Japandi / STOCKHOLM 2025 ↗</a><br><a href="https://www.ikea.com/gb/en/rooms/living-room/gallery/multifunctional-modern-living-room-in-natural-harmony-pubf7392120/" target="_blank" rel="noopener noreferrer">IKEA · Natural Harmony ↗</a></p>
+            <p class="fine">Furniture shows style and layout only, not exact IKEA product models; measure on site before buying.</p>
+          </div>
+        </details>
+      </aside>
+      <span id="proposal-status" role="status" aria-live="polite" hidden></span>
+      <div id="load-overlay">Loading the space…</div>
+      <div id="walk-overlay">Tap / click to look around<br><span style="font-weight:500;opacity:.8;font-size:12px">WASD move · mouse look · Esc release</span></div>
+      <div id="crosshair" hidden aria-hidden="true"></div>
+      <div id="look-zone" aria-hidden="true"></div>
+      <div id="joystick" aria-hidden="true"><div class="stick"></div></div>
+
+      <div id="figma-panel" aria-hidden="true">
+        <div class="figma-toolbar">
+          <div>
+            <span class="label">Floor plan · 148:314</span>
+            <div class="figma-note">Floor plan drawing only. Not the photo board.</div>
+          </div>
+          <a class="btn" id="open-figma" href="https://www.figma.com/design/doJxZQL35Bqdmch0gUYS8X/atlantis?node-id=148-314" target="_blank" rel="noopener noreferrer">Open in Figma</a>
+        </div>
+        <div id="figma-frame-wrap" aria-label="Figma floor plan 148:314">
+          <iframe id="figma-embed" title="Floor plan 148:314" data-src="https://www.figma.com/embed?embed_host=share&amp;url=https%3A%2F%2Fwww.figma.com%2Fdesign%2FdoJxZQL35Bqdmch0gUYS8X%2Fatlantis%3Fnode-id%3D148-314" allowfullscreen></iframe>
+        </div>
+      </div>
+      <div id="hint">
+        <div id="room-name">Explore</div>
+        <div id="hint-right">Orbit drag · scroll zoom</div>
+      </div>
+    </main>
+    <footer hidden>
+      <div class="section-label">Named views</div>
+      <div class="row" id="views" aria-label="Named views"></div>
+      <div class="section-label">Layers</div>
+      <div class="row" id="layers" aria-label="Layer toggles"></div>
+      <div id="status">
+        <span id="status-eye">eye —</span>
+        <span id="status-look">look —</span>
+      </div>
+    </footer>
+  </div>
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.170.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.170.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="./app.js?v=grok-v2-4"></script>
+</body>
+</html>
